@@ -54,57 +54,57 @@ class LeNet(object):
         l0_delta, self.firstConvLayer = self.convolution(self.l0, self.firstConvLayer, l1_delta, deriv=True)  # (batch_sz, 1, 28, 28)
 
     def convolution(self, input_map, kernal, front_delta=None, deriv=False):
-        N, C, W, H = input_map.shape
-        K_NUM, K_C, K_W, K_H = kernal.shape
+        num_of_input_data, C, width_of_input_data, height_of_input_data = input_map.shape
+        num_of_kernal, K_C, width_of_kernal, height_of_kernal = kernal.shape
         if deriv == False:
-            feature_map = np.zeros((N, K_NUM, W-K_W+1, H-K_H+1))
-            for imgId in range(N):
-                for kId in range(K_NUM):
+            feature_map = np.zeros((num_of_input_data, num_of_kernal, width_of_input_data-width_of_kernal +1, height_of_input_data- height_of_kernal +1))
+            for imageID in range(num_of_input_data):
+                for kernalID in range(num_of_kernal):
                     for cId in range(C):
-                        feature_map[imgId][kId] += \
-                          convolve2d(input_map[imgId][cId], kernal[kId,cId,:,:], mode='valid')
+                        feature_map[imageID][kernalID] += \
+                          convolve2d(input_map[imageID][cId], kernal[kernalID,cId,:,:], mode='valid')
             return feature_map
         else :
             # front->back (propagate loss)
-            back_delta = np.zeros((N, C, W, H))
-            kernal_gradient = np.zeros((K_NUM, K_C, K_W, K_H))
+            back_delta = np.zeros((num_of_input_data, C, width_of_input_data, height_of_input_data))
+            kernal_gradient = np.zeros((num_of_kernal, K_C, width_of_kernal, height_of_kernal))
             padded_front_delta = \
-              np.pad(front_delta, [(0,0), (0,0), (K_W-1, K_H-1), (K_W-1, K_H-1)], mode='constant', constant_values=0)
-            for imgId in range(N):
+              np.pad(front_delta, [(0,0), (0,0), (width_of_kernal-1, height_of_kernal-1), (width_of_kernal-1, height_of_kernal-1)], mode='constant', constant_values=0)
+            for imageID in range(num_of_input_data):
                 for cId in range(C):
-                    for kId in range(K_NUM):
-                        back_delta[imgId][cId] += \
-                          convolve2d(padded_front_delta[imgId][kId], kernal[kId,cId,::-1,::-1], mode='valid')
-                        kernal_gradient[kId][cId] += \
-                          convolve2d(front_delta[imgId][kId], input_map[imgId,cId,::-1,::-1], mode='valid')
+                    for kernalID in range(num_of_kernal):
+                        back_delta[imageID][cId] += \
+                          convolve2d(padded_front_delta[imageID][kernalID], kernal[kernalID,cId,::-1,::-1], mode='valid')
+                        kernal_gradient[kernalID][cId] += \
+                          convolve2d(front_delta[imageID][kernalID], input_map[imageID,cId,::-1,::-1], mode='valid')
             # update weights
             kernal += self.learningRate * kernal_gradient
             return back_delta, kernal
 
     def mean_pool(self, input_map, pool, front_delta=None, deriv=False):
-        N, C, W, H = input_map.shape
-        P_W, P_H = tuple(pool)
+        num_of_input_data, C, width_of_input_data, height_of_input_data = input_map.shape
+        poolingWidth, poolingHeight = tuple(pool)
         if deriv == False:
-            feature_map = np.zeros((N, C, W/P_W, H/P_H))
-            feature_map = block_reduce(input_map, tuple((1, 1, P_W, P_H)), func=np.mean)
+            feature_map = np.zeros((num_of_input_data, C, width_of_input_data/poolingWidth, height_of_input_data/poolingHeight))
+            feature_map = block_reduce(input_map, tuple((1, 1, poolingWidth, poolingHeight)), func=np.mean)
             return feature_map
         else :
             # front->back (propagate loss)
-            back_delta = np.zeros((N, C, W, H))
-            back_delta = front_delta.repeat(P_W, axis = 2).repeat(P_H, axis = 3)
-            back_delta /= (P_W * P_H)
+            back_delta = np.zeros((num_of_input_data, C, width_of_input_data, height_of_input_data))
+            back_delta = front_delta.repeat(poolingWidth, axis = 2).repeat(poolingHeight, axis = 3)
+            back_delta /= (poolingWidth * poolingHeight)
             return back_delta
 
     def fully_connect(self, input_data, fc, front_delta=None, deriv=False):
-        N = input_data.shape[0]
+        num_of_input_data = input_data.shape[0]
         if deriv == False:
-            output_data = np.dot(input_data.reshape(N, -1), fc)
+            output_data = np.dot(input_data.reshape(num_of_input_data, -1), fc)
             return output_data
         else :
             # front->back (propagate loss)
             back_delta = np.dot(front_delta, fc.T).reshape(input_data.shape)
             # update weights
-            fc += self.learningRate * np.dot(input_data.reshape(N, -1).T, front_delta)
+            fc += self.learningRate * np.dot(input_data.reshape(num_of_input_data, -1).T, front_delta)
             return back_delta, fc
 
     def relu(self, x, front_delta=None, deriv=False):
@@ -138,8 +138,8 @@ def convertToOneHot(labels):
     return oneHotLabels
 
 def shuffle_dataset(data, label):
-    N = data.shape[0]
-    index = np.random.permutation(N)
+    num_of_data = data.shape[0]
+    index = np.random.permutation(num_of_data)
     x = data[index, :, :]; y = label[index, :]
     return x, y
 
