@@ -5,16 +5,10 @@
 #include <memory>
 
 
-//convCalculate(float ***inputArray,int *** kernelarray, float *** outputArray, int stride, float bias ){
 
 float*** getPatch3D(float*** inputArray, int i, int j,int filterWidth, int filterHeight,int stride){
     int start_i = i * stride;
     int start_j = j * stride;
-    int sizeOfInput = sizeof(inputArray);
-    int depthOfInput = sizeof(inputArray[0]);
-    int heightOfInput = sizeof(inputArray[1]);
-    int widthOfInput = sizeof(inputArray[2]);
-
     int*** outputArray;
 
     for (int k = 0; k < depthOfInput; k++) {
@@ -35,12 +29,10 @@ float*** getPatch3D(float*** inputArray, int i, int j,int filterWidth, int filte
 }
 
 
-float** getPatch2D(float*** inputArray, int i, int j,int filterWidth, int filterHeight,int stride){
+float** getPatch2D(float** inputArray, int i, int j,int filterWidth, int filterHeight,int stride){
     int start_i = i * stride;
     int start_j = j * stride;
-    int sizeOfInput = sizeof(inputArray);
-    int heightOfInput = sizeof(inputArray[0]);
-    int widthOfInput = sizeof(inputArray[1]);
+
 
     int** outputArray;
 
@@ -57,7 +49,6 @@ float** getPatch2D(float*** inputArray, int i, int j,int filterWidth, int filter
 	}
 	return outputArray
 }
-
 
 
 
@@ -204,8 +195,9 @@ public:
 			filters[i] = filter;
 		}
 		
-		void forward(this,float *** input) {
-			inputArray = padding(input,this.zeroPadding);
+		void forward(this,float*** input) {
+			this.inputArray = padding(input,this.zeroPadding);
+			this.convChannelNumber = 3;
 			for(int i = 0; i< this.convFilterNumber; i++){
 				Filter filter = this.filters[i];
 				for(int j = 0; j< this.convOutputHeight; j++){
