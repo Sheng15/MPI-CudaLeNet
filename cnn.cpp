@@ -261,6 +261,64 @@ private:
 };
 
 
+class MaxPoolingLayer {
+
+	private int MPLInputWidth;
+	private int MPLInputHeight;
+	private int MPLChannelNumber;
+	private int MPLFilterWidth;
+	private int MPLFilterHeight;
+	private int MPLStride;
+	private int MPLOutputWidth;
+	private int MPLOutputHeight;
+	public float*** MPLOutputArray;
+
+	MaxPoolingLayer(int inputWidth, int inputHeight, int channelNumber,
+		int filterWidth, int filterHeight, int stride) {
+		MPLInputWidth = inputWidth;
+		MPLInputHeight = inputHeight;
+		MPLChannelNumber = channelNumber;
+		MPLFilterWidth = filterWidth;
+		MPLFilterHeight = filterHeight;
+		MPLStride = stride;
+		MPLOutputWidth = (MPLInputWidth - MPLFilterWidth) / MPLStride + 1;
+		MPLOutputHeight = (MPLInputHeight - MPLFilterHeight) / MPLSride + 1;
+		for (int i = 0; i < MPLChannelNumber; i++) {
+			for (int j = 0; j < MPLOutputHeight; j++) {
+				for (int k = 0; k < MPLStride; k++) {
+					MPLOutputArray[i] = 0;
+				}
+			}
+		}
+	}
+
+	private max(float **a) {
+		int x = sizeof(a) / sizeof(a[0]);
+		int y = sizeof(a[0]) / sizeof(a[0][0]);
+		float max = 0;
+		for (int i = 0; i < x; i++) {
+			for (int j = 0; j < y; j++) {
+				if (max < a[i][j])
+					max = a[i][j];
+			}
+		}
+
+	}
+
+	forward(float*** inputArray) {
+		for (int d = 0; d < MPLChannelNumber; d++) {
+			for (int i = 0; i < MPLOutputHeight; i++) {
+				for (int j = 0; j < MPLOutputWidth; j++) {
+					MPLOutputArray[d][i][j] = max(
+						getPatch2D(inputArray[d], i, j,
+							MPLFilterWidth, MPLFilterHeight, MPLStride));
+				}
+			}
+		}
+	}
+}
+
+
 
 
 
