@@ -272,6 +272,7 @@ class MaxPoolingLayer {
 	private int MPLOutputWidth;
 	private int MPLOutputHeight;
 	public float*** MPLOutputArray;
+	public float*** MPLDeltaArray;
 
 	MaxPoolingLayer(int inputWidth, int inputHeight, int channelNumber,
 		int filterWidth, int filterHeight, int stride) {
@@ -292,20 +293,37 @@ class MaxPoolingLayer {
 		}
 	}
 
-	private max(float **a) {
+	private float max(float **a) {
 		int x = sizeof(a) / sizeof(a[0]);
 		int y = sizeof(a[0]) / sizeof(a[0][0]);
-		float max = 0;
+		float max = 0.0;
 		for (int i = 0; i < x; i++) {
 			for (int j = 0; j < y; j++) {
 				if (max < a[i][j])
 					max = a[i][j];
 			}
 		}
-
+		return max;
 	}
 
-	forward(float*** inputArray) {
+	private int* getMaxIndex(float **a) {
+		int x = sizeof(a) / sizeof(a[0]);
+		int y = sizeof(a[0]) / sizeof(a[0][0]);
+		int* coor = { 0,0 };
+		float max = 0.0;
+		for (int i = 0; i < x; i++) {
+			for (int j = 0; j < y; j++) {
+				if (max < a[i][j]) {
+					max = a[i][j];
+					coor[0] = i;
+					coor[1] = j;
+				}
+			}
+		}
+		return coor;
+	}
+
+	void forward(float*** inputArray) {
 		for (int d = 0; d < MPLChannelNumber; d++) {
 			for (int i = 0; i < MPLOutputHeight; i++) {
 				for (int j = 0; j < MPLOutputWidth; j++) {
@@ -316,6 +334,21 @@ class MaxPoolingLayer {
 			}
 		}
 	}
+
+	void backward(float*** inputArray, float*** sensitivityArray) {
+		for (int d = 0; d < MPLChannelNumber; d++) {
+			for (int i = 0; i < MPLOutputHeight; i++) {
+				for (int j = 0; j < MPLOutputWidth; j++) {
+					int** patchArray = getPatch2D(inputArray[d], i, j,
+						MPLFilterWidth, MPLFilterHeight, MPLStride);
+					int* MPLCoor= getMaxIndex(patchArray);
+					MPLDeltaArray[d][i * MPLStride + MPLCoor[0]][j * MPLStride + MPLCoor[1]]
+						= sensitivityArray[d][i][j];
+				}
+			}
+		}
+	}
+
 }
 
 
