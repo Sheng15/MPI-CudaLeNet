@@ -30,9 +30,33 @@ float*** getPatch3D(float*** inputArray, int i, int j,int filterWidth, int filte
 			}
 		}
 	}
+
+	return outputArray
 }
 
 
+float** getPatch2D(float*** inputArray, int i, int j,int filterWidth, int filterHeight,int stride){
+    int start_i = i * stride;
+    int start_j = j * stride;
+    int sizeOfInput = sizeof(inputArray);
+    int heightOfInput = sizeof(inputArray[0]);
+    int widthOfInput = sizeof(inputArray[1]);
+
+    int** outputArray;
+
+
+	for (int i = 0; i < filterHeight; i++) {
+		outputArray[k][i] = new float[filterWidth];
+	}
+
+
+	for (int i = start_i; i < start_i+filterHeight; i++) {
+		for (int j = start_j; j < start_j+filterWidth; j++){
+			outputArray[k][i-start_i][j-start_j] = inputArray[k][i][j]
+		}
+	}
+	return outputArray
+}
 
 
 
