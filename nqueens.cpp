@@ -138,7 +138,7 @@ int main(int argc, char  *argv[]){
     	bool done = false;
     	int my_solutions = 0;
     	int request;
-    	int seed
+    	int seed;
 
     	MPI_Send(&ready, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
 
