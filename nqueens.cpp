@@ -1,7 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include <iostream>
 #include "mpi.h"
+#include <cstdio>
+#include <cstdlib>
+#include <omp.h>
+#include <math.h>
+#include <time.h>
 
 const int N = 26;
 int queens[N];
@@ -87,7 +90,7 @@ int main(int argc, char  *argv[]){
 	int newTask = NEW_TASK;
 	int terminate = TERMINATE;
 	int ready = READY;
-	int finished = FINISHED
+	int finished = FINISHED;
 
 
 
@@ -102,12 +105,13 @@ int main(int argc, char  *argv[]){
     MPI_Comm_size(MPI_COMM_WORLD, &MPIsize);
 
     if(rank == 0) {
-    	int salves = MPI_Comm_size -1;
+    	int salves = MPIsize -1;
+    	int num_solutions;
     	while(salves){
     		MPI_Recv(&reply, 1, MPI_INT, MPI_ANY_SOURCE, REPLY, MPI_COMM_WORLD, &status);
     		child = status.MPI_SOURCE;
 
-    		if(reply == FINISH){
+    		if(reply == FINISHED){
     			MPI_Recv(&num_solutions, 1, MPI_INT, child, NUM_SOLUTIONS, MPI_COMM_WORLD, &status);
 
     			if(num_solutions >0){
@@ -134,6 +138,7 @@ int main(int argc, char  *argv[]){
     	bool done = false;
     	int my_solutions = 0;
     	int request;
+    	int seed
 
     	MPI_Send(&ready, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
 
@@ -141,7 +146,7 @@ int main(int argc, char  *argv[]){
     		MPI_Recv(&request, 1, MPI_INT, 0, REQUEST, MPI_COMM_WORLD, &status);
 
     		if(request == NEW_TASK){
-    			MPI_Recv(&seeds, 1, MPI_INT, child, SEED, MPI_COMM_WORLD, &status);
+    			MPI_Recv(&seed, 1, MPI_INT, child, SEED, MPI_COMM_WORLD, &status);
 
     			memset(queens,0,sizeof(queens));
 
