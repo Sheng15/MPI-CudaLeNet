@@ -1,10 +1,10 @@
 #include <iostream>
-#include "mpi.h"
 #include <cstdio>
 #include <cstdlib>
 #include <omp.h>
 #include <math.h>
 #include <time.h>
+#include "mpi.h"
 
 const int N = 26;
 int queens[N];
