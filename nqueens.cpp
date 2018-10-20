@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "mpi.h"
 
 const int N = 26;
 int queens[N];
@@ -83,10 +84,10 @@ int main(int argc, char  *argv[]){
 	int seeds;
 
 
-	int newTask = messageType.NEW_TASK;
-	int terminate = messageType.TERMINATE;
-	int ready = messageType.READY;
-	int finished = messageType.FINISHED
+	int newTask = NEW_TASK;
+	int terminate = TERMINATE;
+	int ready = READY;
+	int finished = FINISHED
 
 
 
@@ -94,11 +95,11 @@ int main(int argc, char  *argv[]){
     startTime = MPI_Wtime();
 
 	/*  Give MPI it's command arguments  */
-	int rank, size;
+	int rank, MPIsize;
     MPI_Init(&argc,&argv);
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_size(MPI_COMM_WORLD, &MPIsize);
 
     if(rank == 0) {
     	int salves = MPI_Comm_size -1;
