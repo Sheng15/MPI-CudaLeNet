@@ -105,7 +105,7 @@ int main(int argc, char  *argv[]){
     MPI_Comm_size(MPI_COMM_WORLD, &MPIsize);
 
     if(rank == 0) {
-    	int salves = MPIsize -1;
+    	int salves = size-1;
     	int num_solutions;
     	while(salves){
     		MPI_Recv(&reply, 1, MPI_INT, MPI_ANY_SOURCE, REPLY, MPI_COMM_WORLD, &status);
