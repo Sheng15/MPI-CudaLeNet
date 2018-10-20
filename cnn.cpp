@@ -9,23 +9,23 @@
 float*** getPatch3D(float*** inputArray, int i, int j,int filterWidth, int filterHeight,int stride){
     int start_i = i * stride;
     int start_j = j * stride;
-    int*** outputArray;
+    int*** patchedArray;
 
     for (int k = 0; k < depthOfInput; k++) {
 		for (int i = 0; i < filterHeight; i++) {
-			outputArray[k][i] = new float[filterWidth];
+			patchedArray[k][i] = new float[filterWidth];
 		}
 	}
 
     for (int k = 0; k < depthOfInput; k++) {
 		for (int i = start_i; i < start_i+filterHeight; i++) {
 			for (int j = start_j; j < start_j+filterWidth; j++){
-				outputArray[k][i-start_i][j-start_j] = inputArray[k][i][j]
+				patchedArray[k][i-start_i][j-start_j] = inputArray[k][i][j]
 			}
 		}
 	}
 
-	return outputArray
+	return patchedArray
 }
 
 
@@ -34,20 +34,20 @@ float** getPatch2D(float** inputArray, int i, int j,int filterWidth, int filterH
     int start_j = j * stride;
 
 
-    int** outputArray;
+    int** patchedArray;
 
 
 	for (int i = 0; i < filterHeight; i++) {
-		outputArray[k][i] = new float[filterWidth];
+		patchedArray[k][i] = new float[filterWidth];
 	}
 
 
 	for (int i = start_i; i < start_i+filterHeight; i++) {
 		for (int j = start_j; j < start_j+filterWidth; j++){
-			outputArray[k][i-start_i][j-start_j] = inputArray[k][i][j]
+			patchedArray[k][i-start_i][j-start_j] = inputArray[k][i][j]
 		}
 	}
-	return outputArray
+	return patchedArray
 }
 
 
@@ -180,7 +180,7 @@ public:
 				outputArray[i][j] = new float[outputWidth];
 			}
 		}
-
+ bn
 		for (int i = 0; i < filterNumber; i++) {
 			for (int j = 0; j < outputHeight; j++) {
 				for (int k = 0; k < outputWidth; k++) {
@@ -202,6 +202,19 @@ public:
 				Filter filter = this.filters[i];
 				for(int j = 0; j< this.convOutputHeight; j++){
 					for(int k = 0; k < this.convOutputWidth; k++){
+						float*** patchedArray =  getPatch3D(input,p,q,this.convFliterHeight,this.convFliterHeight,this.stride);
+						int depthOfPatchedArray = sizeof(patchArray) / sizeof(patchArray[0]);
+						int heightOfPatchedArray = sizeof(patchedArray[0]) / sizeof(patchedArray[0][0]);
+						int widthOfPatchedArray = sizeof(patchedArray[0][0]) / sizeof(patchedArray[0][0][0]);
+						for(int x=0; x < depthOfPatchedArray;x++){
+							for(int y=0; y < depthOfPatchedArray;y++){
+								for(int z=0; z < depthOfPatchedArray;z++){
+									outputArray[x][y][z] += patchedArray[x][y][z]*filter[y][z];
+								}
+							}
+
+						}
+						
 
 					}
 				}
