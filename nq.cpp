@@ -34,23 +34,8 @@ public:
 };
 
 
-ChessBoard* generateBoard(int size){
-    ChessBoard* generatedBoards;
-    int count = 0;
-    generatedBoards = new ChessBoard[size*size];
-        for (int i = 0; i < size; i++){
-            for (int j = 0; j < size; j++){
-                if (!collide(1,i,2,j)){ 
-                    ChessBoard board = new ChessBoard(size);
-                    board._queens[0]=i;
-                    board._queens[1]=j;
-                    generatedBoards[count] = board;
-                    count +=1;
-                }
-                
-        }
-    }
-    return generatedBoards;
+int generateBoard(int size){
+    
 }
 
 

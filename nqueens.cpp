@@ -74,24 +74,24 @@ int check(int size,int col0,int col1,int col2){
 
 //可以 openmp
 std::vector<int> generate(int size) {
-	std::vector<int> vector(size*size*size*3);
+	std::vector<int> result(size*size*size*3);
 	int count = 0;
 	for (int i = 0; i < size; i++){
 		for (int j = 0; i < size; j++){
 			for (int k = 0; k < size; k++){
 				if(check(size,i,j,k)){
 					printf("working now for %d queens problem!\n",size);	
-					vector[count*3] = i;
-					vector[count*3+1] = j;
-					vector[count*3+2] = k;
+					result[count*3] = i;
+					result[count*3+1] = j;
+					result[count*3+2] = k;
 					count++;
 				}
 
 			}
 		}
 	}
-	vector(size*size*size*3) = count;
-	return vector;	
+	result(size*size*size*3) = count;
+	return result;	
 }
 /*
 int main(int argc, char  *argv[]){	
@@ -197,16 +197,16 @@ int main(int argc, char *argv[])
 	scanf("%d",&size);
 	start = clock();
 	printf("working now for %d queens problem!\n",size);
-	std::vector<int> vector =  generate(size);
-	int count = vector[size*size*size*3];
+	std::vector<int> result =  generate(size);
+	int count = result[size*size*size*3];
 	printf("seeds are %d !\n",count);
 	for (int i = 0; i < count; i++)
 	{
 		shuffle(size);
 		printf("working for the %d board\n",i);
-		queens[0] = vector[3*i];
-		queens[1] = vector[3*i+1];
-		queens[2] = vector[3*i+2];
+		queens[0] = result[3*i];
+		queens[1] = result[3*i+1];
+		queens[2] = result[3*i+2];
 		my_solutions += place(size,4);
 	}
 	printf("num of solutions are %d\n",my_solutions );
