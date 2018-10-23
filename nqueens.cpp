@@ -181,7 +181,7 @@ int main(int argc, char  *argv[]){
 					queens[0] = seed/(size*size);
 					queens[1] = (seed/size)%size;
 					queens[2] = seed%size;
-					place(size,3,queens);
+					my_solutions = place(size,3,queens);
 		    	}
 
     			MPI_Send(&finished, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
