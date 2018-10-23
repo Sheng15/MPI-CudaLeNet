@@ -154,7 +154,7 @@ int main(int argc, char  *argv[]){
     			MPI_Send(&newTask, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
 
     			MPI_Send(&seeds, 1, MPI_INT, slave, SEED, MPI_COMM_WORLD);
-    			printf("send seed to salve %d\n", salve );
+    			printf("send seed to salve %d\n", slave );
     			seeds --;
     		}else{
 
