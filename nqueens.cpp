@@ -122,6 +122,7 @@ int main(int argc, char  *argv[]){
 	int finished = FINISHED;
 	int newTask = NEW_TASK;
 	int terminate = TERMINATE;
+	int solutionCount = 0;
 	
 
 
@@ -144,7 +145,7 @@ int main(int argc, char  *argv[]){
 
     		if(reply == FINISHED){
     			MPI_Recv(&num_solutions, 1, MPI_INT, child, NUM_SOLUTIONS, MPI_COMM_WORLD, &status);
-    			solutions += num_solutions;   			  		
+    			solutionCount += num_solutions;   			  		
     		}
 
     		if (seeds){
@@ -189,7 +190,7 @@ int main(int argc, char  *argv[]){
 
     			MPI_Send(&my_solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
     			printf("for seed %d ,slave %d find %d solutions.\n",seed,rank,my_solutions);
-			}else{
+			}else{//receive terminate from master, stop then
 				done = true;
 			}
 
@@ -198,7 +199,7 @@ int main(int argc, char  *argv[]){
     }
 
     MPI_Finalize();
-    printf("num of solutions are %d\n",solutions);
+    printf("num of solutions are %d\n",solutionCount);
     return 0;
 }
 
