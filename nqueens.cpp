@@ -176,16 +176,18 @@ int main(int argc, char  *argv[]){
     			MPI_Recv(&seed, 1, MPI_INT, child, SEED, MPI_COMM_WORLD, &status);
 
     			int queens[N];
-    			queens[0] = seed/size;
-    			queens[1] = seed%size;
 
-    			my_solutions = place(size,2,queens);
+    			if(!collide(0,seed/size,1,seed%size)){
+    				queens[0] = seed/size;
+    				queens[1] = seed%size;
+    				my_solutions = place(size,2,queens);
+    			}
 
     			MPI_Send(&finished, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
 
 
     			MPI_Send(&my_solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
-    			printf("for seed %d ,slave %d\n find %d solutions",seed,rank,my_solutions);
+    			printf("for seed %d\n ,slave %d\n find %d \nsolutions",seed,rank,my_solutions);
 			}else{
 				done = true;
 			}
