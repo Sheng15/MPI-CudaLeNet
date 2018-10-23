@@ -114,7 +114,7 @@ int main(int argc, char  *argv[]){
 	//int solutions = 0;	// number of solutions
 	int size = 8;	        // init size of problem as 8
 	int reply;	
-	int child;
+	int slave;
 	int seeds = size * size * size -1;
 
 	//mpi message type
@@ -141,21 +141,21 @@ int main(int argc, char  *argv[]){
     	int num_solutions;
     	while(salves){
     		MPI_Recv(&reply, 1, MPI_INT, MPI_ANY_SOURCE, REPLY, MPI_COMM_WORLD, &status);
-    		child = status.MPI_SOURCE;
+    		slave = status.MPI_SOURCE;
 
     		if(reply == FINISHED){
-    			MPI_Recv(&num_solutions, 1, MPI_INT, child, NUM_SOLUTIONS, MPI_COMM_WORLD, &status);
+    			MPI_Recv(&num_solutions, 1, MPI_INT, slave, NUM_SOLUTIONS, MPI_COMM_WORLD, &status);
     			solutionCount += num_solutions;   			  		
     		}
 
     		if (seeds){
-    			MPI_Send(&newTask, 1, MPI_INT, child, REQUEST, MPI_COMM_WORLD);
+    			MPI_Send(&newTask, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
 
-    			MPI_Send(&seeds, 1, MPI_INT, child, SEED, MPI_COMM_WORLD);
+    			MPI_Send(&seeds, 1, MPI_INT, slave, SEED, MPI_COMM_WORLD);
     			seeds --;
     		}else{
 
-    			MPI_Send(&terminate, 1, MPI_INT, child, REQUEST, MPI_COMM_WORLD);
+    			MPI_Send(&terminate, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
     			salves --;
     		}
 
@@ -174,7 +174,7 @@ int main(int argc, char  *argv[]){
     		MPI_Recv(&request, 1, MPI_INT, 0, REQUEST, MPI_COMM_WORLD, &status);
 
     		if(request == NEW_TASK){
-    			MPI_Recv(&seed, 1, MPI_INT, child, SEED, MPI_COMM_WORLD, &status);
+    			MPI_Recv(&seed, 1, MPI_INT, slave, SEED, MPI_COMM_WORLD, &status);
 
     			int queens[N];
 
