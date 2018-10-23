@@ -193,7 +193,7 @@ int main(int argc, char  *argv[]){
 
 
     			MPI_Send(&solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
-    			printf("for seed %d ,slave %d find %d solutions.\n",seed,rank,my_solutions);
+    			printf("for seed %d ,slave %d find %d solutions.\n",seed,rank,solutions);
 			}else{//receive terminate from master, stop then
 				done = true;
 			}
