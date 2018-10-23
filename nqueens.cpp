@@ -110,7 +110,6 @@ std::vector<int> generate(int size) {
 
 
 int main(int argc, char  *argv[]){	
-	MPI_Status status;
 	//int solutions = 0;	// number of solutions
 	int size = 8;	        // init size of problem as 8
 	int reply;	
@@ -137,15 +136,16 @@ int main(int argc, char  *argv[]){
     MPI_Comm_size(MPI_COMM_WORLD, &MPIsize);
 
     if(rank == 0) {
+    	MPI_Status masterStatus;
     	int salves = MPIsize -1;
     	int num_solutions;
     	while(salves){
-    		MPI_Recv(&reply, 1, MPI_INT, MPI_ANY_SOURCE, REPLY, MPI_COMM_WORLD, &status);
-    		slave = status.MPI_SOURCE;
+    		MPI_Recv(&reply, 1, MPI_INT, MPI_ANY_SOURCE, REPLY, MPI_COMM_WORLD, &masterStatus);
+    		slave = masterStatus.MPI_SOURCE;
     		printf("receive notice from slave %d\n", slave );
 
     		if(reply == FINISHED){
-    			MPI_Recv(&num_solutions, 1, MPI_INT, slave, NUM_SOLUTIONS, MPI_COMM_WORLD, &status);
+    			MPI_Recv(&num_solutions, 1, MPI_INT, slave, NUM_SOLUTIONS, MPI_COMM_WORLD, &masterStatus);
     			solutionCount += num_solutions;  
     			printf("%d slave said it finished its work\n",slave ); 			  		
     		}
@@ -166,7 +166,7 @@ int main(int argc, char  *argv[]){
     	}
 
     }else{
-
+    	MPI_Status slaveStatus;
     	bool done = false;
     	int my_solutions = 0;
     	int request;
@@ -175,10 +175,10 @@ int main(int argc, char  *argv[]){
     	MPI_Send(&ready, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
 
     	while(!done){
-    		MPI_Recv(&request, 1, MPI_INT, 0, REQUEST, MPI_COMM_WORLD, &status);
+    		MPI_Recv(&request, 1, MPI_INT, 0, REQUEST, MPI_COMM_WORLD, &slaveStatus);
 
     		if(request == NEW_TASK){
-    			MPI_Recv(&seed, 1, MPI_INT, slave, SEED, MPI_COMM_WORLD, &status);
+    			MPI_Recv(&seed, 1, MPI_INT, slave, SEED, MPI_COMM_WORLD, &slaveStatus);
     			printf("%d receive seed message\n", slave);
     			int queens[N];
 
