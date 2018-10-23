@@ -49,20 +49,20 @@ void shuffle(int size,int* queens){
 }
 
 //place queen, befor that row has been initialed
-int place(int size,int row,int* queens) {
+int place(int size,int row,int* queens,int solutionCount) {
 	int col;
 	if (row >= size) {
-		solutions++;
+		solutionCount++;
 	}
 	else {
 		for (col = 0; col < size; col++) {
 			if (valid(row, col,queens)) {
 				queens[row] = col;
-				place(size,row + 1,queens);  //recursive
+				place(size,row + 1,queens,solutionCount);  //recursive
 			}
 		}
 	} 
-	return solutions;
+	return solutionCount;
 }
 
 
@@ -180,7 +180,7 @@ int main(int argc, char  *argv[]){
     			if(!collide(0,seed/size,1,seed%size)){
     				queens[0] = seed/size;
     				queens[1] = seed%size;
-    				my_solutions = place(size,2,queens);
+    				place(size,2,queens,my_solutions);
     			}
 
     			MPI_Send(&finished, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
