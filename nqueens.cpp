@@ -142,24 +142,24 @@ int main(int argc, char  *argv[]){
     	while(salves){
     		MPI_Recv(&reply, 1, MPI_INT, MPI_ANY_SOURCE, REPLY, MPI_COMM_WORLD, &masterStatus);
     		slave = masterStatus.MPI_SOURCE;
-    		printf("receive notice from slave %d\n", slave );
+    		//printf("receive notice from slave %d\n", slave );
 
     		if(reply == FINISHED){
     			MPI_Recv(&num_solutions, 1, MPI_INT, slave, NUM_SOLUTIONS, MPI_COMM_WORLD, &masterStatus);
     			solutionCount += num_solutions;  
-    			printf("%d slave said it finished its work\n",slave ); 			  		
+    			//printf("%d slave said it finished its work\n",slave ); 			  		
     		}
 
     		if (seeds){
     			MPI_Send(&newTask, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
 
     			MPI_Send(&seeds, 1, MPI_INT, slave, SEED, MPI_COMM_WORLD);
-    			printf("send seed to salve %d\n", slave );
+    			//printf("send seed to salve %d\n", slave );
     			seeds --;
     		}else{
 
     			MPI_Send(&terminate, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
-    			printf("message to terminate slave %d\n", slave );
+    			//printf("message to terminate slave %d\n", slave );
     			salves --;
     		}
 
@@ -179,7 +179,7 @@ int main(int argc, char  *argv[]){
 
     		if(request == NEW_TASK){
     			MPI_Recv(&seed, 1, MPI_INT, 0, SEED, MPI_COMM_WORLD, &slaveStatus);
-    			printf("%d receive seed message\n", slave);
+    			//printf("%d receive seed message\n", slave);
     			int queens[N];
 
     			if(!collide(0,seed/(size*size),1,(seed/size)%size)&&!collide(0,seed/(size*size),2,seed%size)&&!collide(1,(seed/size)%size,2,seed%size)){
@@ -193,7 +193,7 @@ int main(int argc, char  *argv[]){
 
 
     			MPI_Send(&my_solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
-    			//printf("for seed %d ,slave %d find %d solutions.\n",seed,rank,my_solutions);
+    			printf("for seed %d ,slave %d find %d solutions.\n",seed,rank,my_solutions);
 			}else{//receive terminate from master, stop then
 				done = true;
 			}
