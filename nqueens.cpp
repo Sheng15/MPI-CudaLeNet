@@ -177,10 +177,10 @@ int main(int argc, char  *argv[]){
 
     			int queens[N];
 
-    			if(!collide(0,i/(size*size),1,(i/size)%size)&&!collide(0,i/(size*size),2,i%size)&&!collide(1,(i/size)%size,2,i%size)){
-					queens[0] = i/(size*size);
-					queens[1] = (i/size)%size;
-					queens[2] = i%size;
+    			if(!collide(0,seed/(size*size),1,(seed/size)%size)&&!collide(0,seed/(size*size),2,seed%size)&&!collide(1,(seed/size)%size,2,seed%size)){
+					queens[0] = seed/(size*size);
+					queens[1] = (seed/size)%size;
+					queens[2] = seed%size;
 					place(size,3,queens);
 		    	}
 
