@@ -187,7 +187,7 @@ int main(int argc, char  *argv[]){
 
 
     			MPI_Send(&my_solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
-    			printf("for seed %d ,slave %d find %d solutions",seed,rank,my_solutions);
+    			printf("for seed %d ,slave %d find %d solutions.\n",seed,rank,my_solutions);
 			}else{
 				done = true;
 			}
