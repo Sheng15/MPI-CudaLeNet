@@ -168,7 +168,6 @@ int main(int argc, char  *argv[]){
     }else{
     	MPI_Status slaveStatus;
     	bool done = false;
-    	int my_solutions = 0;
     	int request;
     	int seed;
 
@@ -186,13 +185,14 @@ int main(int argc, char  *argv[]){
 					queens[0] = seed/(size*size);
 					queens[1] = (seed/size)%size;
 					queens[2] = seed%size;
-					my_solutions = place(size,3,queens);
+					solutions = 0;
+					place(size,3,queens);
 		    	}
 
     			MPI_Send(&finished, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
 
 
-    			MPI_Send(&my_solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
+    			MPI_Send(&solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
     			printf("for seed %d ,slave %d find %d solutions.\n",seed,rank,my_solutions);
 			}else{//receive terminate from master, stop then
 				done = true;
