@@ -49,20 +49,20 @@ void shuffle(int size,int* queens){
 }
 
 //place queen, befor that row has been initialed
-int place(int size,int row,int* queens,int solutionCount) {
+int place(int size,int row,int* queens) {
 	int col;
 	if (row >= size) {
-		solutionCount++;
+		solutions++;
 	}
 	else {
 		for (col = 0; col < size; col++) {
 			if (valid(row, col,queens)) {
 				queens[row] = col;
-				place(size,row + 1,queens,solutionCount);  //recursive
+				place(size,row + 1,queens);  //recursive
 			}
 		}
 	} 
-	return solutionCount;
+	return solutions;
 }
 
 
@@ -110,18 +110,18 @@ std::vector<int> generate(int size) {
 
 
 int main(int argc, char  *argv[]){	
-	MPI_Status status;
 	//int solutions = 0;	// number of solutions
 	int size = 8;	        // init size of problem as 8
 	int reply;	
-	int child;
-	int seeds = size * size -1;
+	int slave;
+	int seeds = size * size * size -1;
 
 	//mpi message type
 	int ready = READY;
 	int finished = FINISHED;
 	int newTask = NEW_TASK;
 	int terminate = TERMINATE;
+	int solutionCount = 0;
 	
 
 
@@ -136,59 +136,66 @@ int main(int argc, char  *argv[]){
     MPI_Comm_size(MPI_COMM_WORLD, &MPIsize);
 
     if(rank == 0) {
+    	MPI_Status masterStatus;
     	int salves = MPIsize -1;
     	int num_solutions;
     	while(salves){
-    		MPI_Recv(&reply, 1, MPI_INT, MPI_ANY_SOURCE, REPLY, MPI_COMM_WORLD, &status);
-    		child = status.MPI_SOURCE;
+    		MPI_Recv(&reply, 1, MPI_INT, MPI_ANY_SOURCE, REPLY, MPI_COMM_WORLD, &masterStatus);
+    		slave = masterStatus.MPI_SOURCE;
+    		//printf("receive notice from slave %d\n", slave );
 
     		if(reply == FINISHED){
-    			MPI_Recv(&num_solutions, 1, MPI_INT, child, NUM_SOLUTIONS, MPI_COMM_WORLD, &status);
-    			solutions += num_solutions;   			  		
+    			MPI_Recv(&num_solutions, 1, MPI_INT, slave, NUM_SOLUTIONS, MPI_COMM_WORLD, &masterStatus);
+    			printf("salve says it found %d\n solutions",num_solutions );
+    			solutionCount += num_solutions;  
+    			printf("we found %d solutions so far ! \n",solutionCount ); 			  		
     		}
 
     		if (seeds){
-    			MPI_Send(&newTask, 1, MPI_INT, child, REQUEST, MPI_COMM_WORLD);
+    			MPI_Send(&newTask, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
 
-    			MPI_Send(&seeds, 1, MPI_INT, child, SEED, MPI_COMM_WORLD);
+    			MPI_Send(&seeds, 1, MPI_INT, slave, SEED, MPI_COMM_WORLD);
+    			//printf("send seed to salve %d\n", slave );
     			seeds --;
     		}else{
 
-    			MPI_Send(&terminate, 1, MPI_INT, child, REQUEST, MPI_COMM_WORLD);
+    			MPI_Send(&terminate, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
+    			//printf("message to terminate slave %d\n", slave );
     			salves --;
     		}
 
     	}
 
     }else{
-
+    	MPI_Status slaveStatus;
     	bool done = false;
-    	int my_solutions = 0;
     	int request;
     	int seed;
 
     	MPI_Send(&ready, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
 
     	while(!done){
-    		MPI_Recv(&request, 1, MPI_INT, 0, REQUEST, MPI_COMM_WORLD, &status);
+    		MPI_Recv(&request, 1, MPI_INT, 0, REQUEST, MPI_COMM_WORLD, &slaveStatus);
 
     		if(request == NEW_TASK){
-    			MPI_Recv(&seed, 1, MPI_INT, child, SEED, MPI_COMM_WORLD, &status);
-
+    			MPI_Recv(&seed, 1, MPI_INT, 0, SEED, MPI_COMM_WORLD, &slaveStatus);
+    			//printf("%d receive seed message\n", slave);
     			int queens[N];
 
-    			if(!collide(0,seed/size,1,seed%size)){
-    				queens[0] = seed/size;
-    				queens[1] = seed%size;
-    				place(size,2,queens,my_solutions);
-    			}
+    			if(!collide(0,seed/(size*size),1,(seed/size)%size)&&!collide(0,seed/(size*size),2,seed%size)&&!collide(1,(seed/size)%size,2,seed%size)){
+					queens[0] = seed/(size*size);
+					queens[1] = (seed/size)%size;
+					queens[2] = seed%size;
+					solutions = 0;
+					place(size,3,queens);
+		    	}
 
     			MPI_Send(&finished, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
 
 
-    			MPI_Send(&my_solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
-    			printf("for seed %d ,slave %d find %d solutions.\n",seed,rank,my_solutions);
-			}else{
+    			MPI_Send(&solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
+    			//printf("for seed %d ,slave %d find %d solutions.\n",seed,rank,solutions);
+			}else{//receive terminate from master, stop then
 				done = true;
 			}
 
@@ -196,8 +203,8 @@ int main(int argc, char  *argv[]){
 
     }
 
-    printf("num of solutions are %d\n",solutions);
     MPI_Finalize();
+    printf("num of solutions are %d\n",solutionCount);
     return 0;
 }
 
@@ -231,7 +238,7 @@ int main(int argc, char *argv[])
 	printf("finish the work in %d seconds\n",finish - start);
 
 	return 0;
-}
+}*/
 
 /*
 int main(int argc, char *argv[]){
@@ -242,14 +249,24 @@ int main(int argc, char *argv[]){
 	int queens[N];
 	printf("num of prob1em size: ",&size);
 	scanf("%d",&size);
-	place(size,0,queens);
+	int seed = size * size *  size -1;
+	for (int i = seed; i>0 ; i--){
+		if(!collide(0,i/(size*size),1,(i/size)%size)&&!collide(0,i/(size*size),2,i%size)&&!collide(1,(i/size)%size,2,i%size)){
+			printf("%d    ,",i);
+			queens[0] = i/(size*size);
+			queens[1] = (i/size)%size;
+			queens[2] = i%size;
+			place(size,3,queens);
+			printf("(%d,%d,%d),",queens[0],queens[1],queens[2]);
+			printf("%d\n",solutions);
+    	}
+	}
 	printf("num of solutions are %d\n",solutions);
 	finish = clock();
-	printf("finish the work in %d seconds\n",(finish - start)/10000);
+	printf("finish the work in %d seconds\n",(finish - start)/1000	);
 
 	return 0;
 }*/
-
 
 
 
