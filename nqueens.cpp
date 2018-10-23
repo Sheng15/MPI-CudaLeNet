@@ -146,8 +146,9 @@ int main(int argc, char  *argv[]){
 
     		if(reply == FINISHED){
     			MPI_Recv(&num_solutions, 1, MPI_INT, slave, NUM_SOLUTIONS, MPI_COMM_WORLD, &masterStatus);
+    			printf("salve says it found %d\n solutions",num_solutions );
     			solutionCount += num_solutions;  
-    			printf("we foungd %d solutions so far ! \n",solutionCount ); 			  		
+    			printf("we found %d solutions so far ! \n",solutionCount ); 			  		
     		}
 
     		if (seeds){
