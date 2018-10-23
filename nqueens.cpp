@@ -178,7 +178,7 @@ int main(int argc, char  *argv[]){
     		MPI_Recv(&request, 1, MPI_INT, 0, REQUEST, MPI_COMM_WORLD, &slaveStatus);
 
     		if(request == NEW_TASK){
-    			MPI_Recv(&seed, 1, MPI_INT, slave, SEED, MPI_COMM_WORLD, &slaveStatus);
+    			MPI_Recv(&seed, 1, MPI_INT, 0, SEED, MPI_COMM_WORLD, &slaveStatus);
     			printf("%d receive seed message\n", slave);
     			int queens[N];
 
