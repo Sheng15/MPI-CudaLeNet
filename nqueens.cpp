@@ -4,7 +4,7 @@
 #include <omp.h>
 #include <math.h>
 #include <time.h>
-#include "mpi.h"
+//#include "mpi.h"
 
 const int N = 26;//max of size if 26
 //int queens[N]; // board of a game 
@@ -49,20 +49,20 @@ void shuffle(int size,int* queens){
 }
 
 //place queen, befor that row has been initialed
-int place(int size,int row,int* queens,int solutionCount) {
+int place(int size,int row,int* queens) {
 	int col;
 	if (row >= size) {
-		solutionCount++;
+		solutions++;
 	}
 	else {
 		for (col = 0; col < size; col++) {
 			if (valid(row, col,queens)) {
 				queens[row] = col;
-				place(size,row + 1,queens,solutionCount);  //recursive
+				place(size,row + 1,queens);  //recursive
 			}
 		}
 	} 
-	return solutionCount;
+	return solutions;
 }
 
 
@@ -115,7 +115,7 @@ int main(int argc, char  *argv[]){
 	int size = 8;	        // init size of problem as 8
 	int reply;	
 	int child;
-	int seeds = size * size -1;
+	int seeds = size * size * size -1;
 
 	//mpi message type
 	int ready = READY;
@@ -177,17 +177,18 @@ int main(int argc, char  *argv[]){
 
     			int queens[N];
 
-    			if(!collide(0,seed/size,1,seed%size)){
-    				queens[0] = seed/size;
-    				queens[1] = seed%size;
-    				place(size,2,queens,my_solutions);
-    			}
+    			if(!collide(0,i/(size*size),1,(i/size)%size)&&!collide(0,i/(size*size),2,i%size)&&!collide(1,(i/size)%size,2,i%size)){
+					queens[0] = i/(size*size);
+					queens[1] = (i/size)%size;
+					queens[2] = i%size;
+					place(size,3,queens);
+		    	}
 
     			MPI_Send(&finished, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
 
 
     			MPI_Send(&my_solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
-    			printf("for seed %d ,slave %d find %d solutions.\n",seed,rank,my_solutions);
+    			printf("for seed %d ,slave %d find %d solutions/n",seed,rank,my_solutions);
 			}else{
 				done = true;
 			}
@@ -231,7 +232,7 @@ int main(int argc, char *argv[])
 	printf("finish the work in %d seconds\n",finish - start);
 
 	return 0;
-}
+}*/
 
 /*
 int main(int argc, char *argv[]){
@@ -242,14 +243,24 @@ int main(int argc, char *argv[]){
 	int queens[N];
 	printf("num of prob1em size: ",&size);
 	scanf("%d",&size);
-	place(size,0,queens);
+	int seed = size * size *  size -1;
+	for (int i = seed; i>0 ; i--){
+		if(!collide(0,i/(size*size),1,(i/size)%size)&&!collide(0,i/(size*size),2,i%size)&&!collide(1,(i/size)%size,2,i%size)){
+			printf("%d    ,",i);
+			queens[0] = i/(size*size);
+			queens[1] = (i/size)%size;
+			queens[2] = i%size;
+			place(size,3,queens);
+			printf("(%d,%d,%d),",queens[0],queens[1],queens[2]);
+			printf("%d\n",solutions);
+    	}
+	}
 	printf("num of solutions are %d\n",solutions);
 	finish = clock();
-	printf("finish the work in %d seconds\n",(finish - start)/10000);
+	printf("finish the work in %d seconds\n",(finish - start)/1000	);
 
 	return 0;
 }*/
-
 
 
 
