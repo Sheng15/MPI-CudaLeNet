@@ -97,7 +97,7 @@ int main(int argc, char *argv[]){
 	place(size,0,queens);
 	printf("num of solutions are %d\n",solutions);
 	finish = clock();
-	printf("finish the work in %ld seconds\n",(finish - start)/1000	);
+	printf("finish the work in %d seconds\n",finish - start	);
 
 	return 0;
 }
