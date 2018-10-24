@@ -90,6 +90,7 @@ int generate(int size){
 
 int main(int argc, char  *argv[]){	
 	//int solutions = 0;	// number of solutions
+	int size;
 	printf("num of prob1em size: ",&size);
 	scanf("%d",&size);        
 	int reply;	
