@@ -90,7 +90,7 @@ int generate(int size){
 
 int main(int argc, char  *argv[]){	
 	//int solutions = 0;	// number of solutions
-	int size = 17;	        // init size of problem as 8
+	int size = 15;	        // init size of problem as 8
 	int reply;	
 	int slave;
 	int seeds = size * size * size -1;
