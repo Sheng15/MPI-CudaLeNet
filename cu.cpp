@@ -141,13 +141,12 @@ int main(int argc, char  *argv[]){
     	int slave = 1;
 
     	MPI_Send(&seeds, 1, MPI_INT, slave, SEED, MPI_COMM_WORLD);
-    			//printf("send seed to salve %d\n", slave );
+    	printf("send seed to salve %d\n", slave );
     	MPI_Recv(&num_solutions, 1, MPI_INT, slave, NUM_SOLUTIONS, MPI_COMM_WORLD, &masterStatus);
+    	printf("num of solutions from salve are %d\n",num_solutions);
 
     }else{
     	MPI_Status slaveStatus;
-    	bool done = false;
-    	int request;
     	int seed;
 
 		MPI_Recv(&seed, 1, MPI_INT, 0, SEED, MPI_COMM_WORLD, &slaveStatus);
@@ -161,12 +160,13 @@ int main(int argc, char  *argv[]){
 			solutions = 0;
 			place(size,3,queens);
     	}*/
+    	int my_solutions = 8；
 
-    	MPI_Send(&solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
+    	MPI_Send(&my_solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
+    	printf("send solutions %d to master!\n",solutionCount);
     }
 
     MPI_Finalize();
-    printf("num of solutions are %d\n",solutionCount);
     return 0;
 }
 
