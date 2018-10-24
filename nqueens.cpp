@@ -178,7 +178,7 @@ int main(int argc, char  *argv[]){
     }
 
     MPI_Finalize();
-    printf("from slave %d ,num of solutions are %d\n",solutions);
+    printf("from slave %d ,num of solutions are %d\n",rank,solutions);
     return 0;
 }
 
