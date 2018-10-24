@@ -117,7 +117,7 @@ int main(int argc, char  *argv[]){
     	MPI_Status masterStatus;
     	int slaves = MPIsize -1;
     	int resultCount = 0;
-    	while(true){
+    	while(resultCount >= slaves){
     		MPI_Recv(&reply, 1, MPI_INT, MPI_ANY_SOURCE, REPLY, MPI_COMM_WORLD, &masterStatus);
     		slave = masterStatus.MPI_SOURCE;
     		//printf("receive %d notice from slave %d\n", reply,slave );
@@ -132,7 +132,6 @@ int main(int argc, char  *argv[]){
 	    		}else{
 	    			MPI_Send(&terminate, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
 	    			//printf("message to terminate slave %d\n", slave );
-	    			slaves --;
 	    		}			  		
     		}else{
     			MPI_Recv(&slaveResult, 1, MPI_INT, slave, NUM_SOLUTIONS, MPI_COMM_WORLD, &masterStatus);
@@ -178,7 +177,7 @@ int main(int argc, char  *argv[]){
     }
 
     MPI_Finalize();
-    //printf("from slave %d ,num of solutions are %d\n",rank,solutions);
+    printf("num of solutions are %d\n",solutions);
     return 0;
 }
 
