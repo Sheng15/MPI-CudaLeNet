@@ -160,7 +160,7 @@ int main(int argc, char  *argv[]){
 			solutions = 0;
 			place(size,3,queens);
     	}*/
-    	int my_solutions = 8；
+    	int my_solutions = 8;
 
     	MPI_Send(&my_solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
     	printf("send solutions %d to master!\n",solutionCount);
