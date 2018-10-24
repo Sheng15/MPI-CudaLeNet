@@ -90,11 +90,11 @@ int generate(int size){
 
 int main(int argc, char *argv[]){
 	int size;
+	sscanf(argv[1], "%d", &size); 
 	clock_t start,finish;
 	start = clock();
 	int queens[N];
-	printf("num of prob1em size: ",&size);
-	scanf("%d",&size);
+
 	place(size,0,queens);
 	printf("num of solutions are %d\n",solutions);
 	finish = clock();
