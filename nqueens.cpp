@@ -117,7 +117,7 @@ int main(int argc, char  *argv[]){
     	MPI_Status masterStatus;
     	int slaves = MPIsize -1;
     	int resultCount = 0;
-    	while(resultCount < slaves){
+    	while(true){
     		MPI_Recv(&reply, 1, MPI_INT, MPI_ANY_SOURCE, REPLY, MPI_COMM_WORLD, &masterStatus);
     		slave = masterStatus.MPI_SOURCE;
     		//printf("receive %d notice from slave %d\n", reply,slave );
