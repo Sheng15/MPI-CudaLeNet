@@ -90,7 +90,7 @@ int generate(int size){
 
 int main(int argc, char  *argv[]){	
 	//int solutions = 0;	// number of solutions
-	int size = 8;	        // init size of problem as 8
+	int size = 17;	        // init size of problem as 8
 	int reply;	
 	int slave;
 	int seeds = size * size * size -1;
@@ -140,6 +140,10 @@ int main(int argc, char  *argv[]){
     			resultCount++;
     		}
     	}
+    	printf("num of solutions are %d\n",solutionCount);
+    	endTime = MPI_Wtime();
+    	double duration = endTime - startTime;
+        printf("%f seconds\n", duration);
     }else{
     	MPI_Status slaveStatus;
     	bool done = false;
@@ -177,7 +181,6 @@ int main(int argc, char  *argv[]){
     }
 
     MPI_Finalize();
-    printf("num of solutions are %d\n",solutionCount);
     return 0;
 }
 
