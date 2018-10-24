@@ -4,7 +4,7 @@
 #include <omp.h>
 #include <math.h>
 #include <time.h>
-#include "mpi.h"
+//#include "mpi.h"
 
 const int N = 26;//max of size if 26
 //int queens[N]; // board of a game 
@@ -49,7 +49,7 @@ void shuffle(int size,int* queens){
 }
 
 //place queen, befor that row has been initialed
-int place(int size,int row,int* queens) {
+void place(int size,int row,int* queens) {
 	int col;
 	if (row >= size) {
 		solutions++;
@@ -62,7 +62,6 @@ int place(int size,int row,int* queens) {
 			}
 		}
 	} 
-	return solutions;
 }
 
 
@@ -85,28 +84,7 @@ int generate(int size){
 
 }
 
-/*
-//可以 openmp
-std::vector<int> generate(int size) {
-	std::vector<int> result(size*size*size*3);
-	int count = 0;
-	for (int i = 0; i < size; i++){
-		for (int j = 0; i < size; j++){
-			for (int k = 0; k < size; k++){
-				if(check(size,i,j,k)){
-					printf("working now for %d queens problem!\n",size);	
-					result[count*3] = i;
-					result[count*3+1] = j;
-					result[count*3+2] = k;
-					count++;
-				}
 
-			}
-		}
-	}
-	result(size*size*size*3) = count;
-	return result;	
-}*/
 
 
 int main(int argc, char  *argv[]){	
@@ -121,7 +99,7 @@ int main(int argc, char  *argv[]){
 	int finished = FINISHED;
 	int newTask = NEW_TASK;
 	int terminate = TERMINATE;
-	int solutionCount = 0;
+
 	
 
 
@@ -138,32 +116,24 @@ int main(int argc, char  *argv[]){
     if(rank == 0) {
     	MPI_Status masterStatus;
     	int salves = MPIsize -1;
-    	int num_solutions;
     	while(salves){
     		MPI_Recv(&reply, 1, MPI_INT, MPI_ANY_SOURCE, REPLY, MPI_COMM_WORLD, &masterStatus);
     		slave = masterStatus.MPI_SOURCE;
     		//printf("receive notice from slave %d\n", slave );
 
     		if(reply == FINISHED){
-    			MPI_Recv(&num_solutions, 1, MPI_INT, slave, NUM_SOLUTIONS, MPI_COMM_WORLD, &masterStatus);
-    			printf("salve says it found %d\n solutions",num_solutions );
-    			solutionCount += num_solutions;  
-    			printf("we found %d solutions so far ! \n",solutionCount ); 			  		
+	    		if (seeds){
+	    			MPI_Send(&newTask, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
+
+	    			MPI_Send(&seeds, 1, MPI_INT, slave, SEED, MPI_COMM_WORLD);
+	    			//printf("send seed to salve %d\n", slave );
+	    			seeds --;
+	    		}else{
+	    			MPI_Send(&terminate, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
+	    			//printf("message to terminate slave %d\n", slave );
+	    			salves --;
+	    		}			  		
     		}
-
-    		if (seeds){
-    			MPI_Send(&newTask, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
-
-    			MPI_Send(&seeds, 1, MPI_INT, slave, SEED, MPI_COMM_WORLD);
-    			//printf("send seed to salve %d\n", slave );
-    			seeds --;
-    		}else{
-
-    			MPI_Send(&terminate, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
-    			//printf("message to terminate slave %d\n", slave );
-    			salves --;
-    		}
-
     	}
 
     }else{
@@ -186,15 +156,11 @@ int main(int argc, char  *argv[]){
 					queens[0] = seed/(size*size);
 					queens[1] = (seed/size)%size;
 					queens[2] = seed%size;
-					solutions = 0;
 					place(size,3,queens);
 		    	}
 
     			MPI_Send(&finished, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
 
-
-    			MPI_Send(&solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
-    			//printf("for seed %d ,slave %d find %d solutions.\n",seed,rank,solutions);
 			}else{//receive terminate from master, stop then
 				done = true;
 			}
@@ -208,57 +174,26 @@ int main(int argc, char  *argv[]){
     return 0;
 }
 
-/*
-int main(int argc, char *argv[])
-{
-	clock_t start,finish;
-	int size;
-	//int my_solutions = 0;
-	printf("num of prob1em size: ",&size);
-	scanf("%d",&size);
-	start = clock();
-	printf("working now for %d queens problem!\n",size);
-	//int seed = generate(size);
-	//printf("num of seeds are %d\n",seed);
-	/*std::vector<int> result =  generate(size);
-	int count = result[size*size*size*3];
-	printf("seeds are %d !\n",count);
-	for (int i = 0; i < count; i++)
-	{
-		shuffle(size);
-		printf("working for the %d board\n",i);
-		queens[0] = result[3*i];
-		queens[1] = result[3*i+1];
-		queens[2] = result[3*i+2];
-		my_solutions += place(size,4);
-	}
-	place(size,0);
-	printf("num of solutions are %d\n",solutions);
-	finish = clock();
-	printf("finish the work in %d seconds\n",finish - start);
 
-	return 0;
-}*/
 
 /*
 int main(int argc, char *argv[]){
 	int size;
 	clock_t start,finish;
 	start = clock();
-	//int my_solutions = 0;
 	int queens[N];
 	printf("num of prob1em size: ",&size);
 	scanf("%d",&size);
 	int seed = size * size *  size -1;
 	for (int i = seed; i>0 ; i--){
 		if(!collide(0,i/(size*size),1,(i/size)%size)&&!collide(0,i/(size*size),2,i%size)&&!collide(1,(i/size)%size,2,i%size)){
-			printf("%d    ,",i);
+			printf("seed : %d    ,",i);
+			//solutions = 0;
 			queens[0] = i/(size*size);
 			queens[1] = (i/size)%size;
 			queens[2] = i%size;
 			place(size,3,queens);
-			printf("(%d,%d,%d),",queens[0],queens[1],queens[2]);
-			printf("%d\n",solutions);
+			printf("rows (%d,%d,%d),",queens[0],queens[1],queens[2]);
     	}
 	}
 	printf("num of solutions are %d\n",solutions);
@@ -266,9 +201,9 @@ int main(int argc, char *argv[]){
 	printf("finish the work in %d seconds\n",(finish - start)/1000	);
 
 	return 0;
-}*/
+}
 
-
+*/
 
 
 
