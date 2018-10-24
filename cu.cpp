@@ -141,7 +141,7 @@ int main(int argc, char  *argv[]){
     	int slave = 1;
 
     	MPI_Send(&seeds, 1, MPI_INT, slave, SEED, MPI_COMM_WORLD);
-    	printf("send seed to salve %d\n", slave );
+    	printf("send seeds %d to salve %d\n", seeds, slave );
     	MPI_Recv(&num_solutions, 1, MPI_INT, slave, NUM_SOLUTIONS, MPI_COMM_WORLD, &masterStatus);
     	printf("num of solutions from salve are %d\n",num_solutions);
 
@@ -163,7 +163,7 @@ int main(int argc, char  *argv[]){
     	int my_solutions = 8;
 
     	MPI_Send(&my_solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
-    	printf("send solutions %d to master!\n",solutionCount);
+    	printf("send solutions %d to master!\n",my_solutions);
     }
 
     MPI_Finalize();
