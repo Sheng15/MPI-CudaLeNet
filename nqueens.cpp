@@ -121,7 +121,7 @@ int main(int argc, char  *argv[]){
     		slave = masterStatus.MPI_SOURCE;
     		//printf("receive notice from slave %d\n", slave );
 
-    		if(reply == FINISHED){
+    		if(reply == FINISHED || reply == READY){
 	    		if (seeds){
 	    			MPI_Send(&newTask, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
 
