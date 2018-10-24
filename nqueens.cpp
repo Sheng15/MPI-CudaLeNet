@@ -139,9 +139,10 @@ int main(int argc, char  *argv[]){
     		{
     			MPI_Recv(&slaveResult, 1, MPI_INT, slave, NUM_SOLUTIONS, MPI_COMM_WORLD, &masterStatus);
     			solutionCount +=slaveResult;
+    			printf("from slave %d ,num of solutions are %d\n",rank,slaveResult);
     		}
     	}
-
+    	printf("from slave %d ,num of solutions are %d\n",rank,solutionCount);
     }else{
     	MPI_Status slaveStatus;
     	bool done = false;
@@ -178,7 +179,7 @@ int main(int argc, char  *argv[]){
     }
 
     MPI_Finalize();
-    printf("from slave %d ,num of solutions are %d\n",rank,solutions);
+    //printf("from slave %d ,num of solutions are %d\n",rank,solutions);
     return 0;
 }
 
