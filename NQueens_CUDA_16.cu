@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <time.h>
 #include <vector>
-#define QUEENS (14)
+#define QUEENS (16)
 
 __global__ void countQueens(int* frontQueensPos, int* data, int* numFQP)
 {
@@ -28,7 +28,6 @@ __global__ void countQueens(int* frontQueensPos, int* data, int* numFQP)
 			}
 		}
 	}
-
 	int totalFQP = numFQP[0] / 3;
 
 	for (int FQP_number = 0; FQP_number < totalFQP; FQP_number++) {
@@ -109,7 +108,7 @@ __host__ void initData(int* data) {
 
 __host__ int NQueens(int seedLower, int seedUpper)
 {
-	clock_t start, mid1, mid2, end;
+	clock_t start, mid0, mid1, mid2, end;
 
 	int resultHere = 0;
 	int* d_FQP;
@@ -138,7 +137,7 @@ __host__ int NQueens(int seedLower, int seedUpper)
 	for (int i = seedFrom; i < seedTo; i++) {
 		tempFrontQueensPos[0] = i / QUEENS / QUEENS;
 		tempFrontQueensPos[1] = i / QUEENS % QUEENS;
-		tempFrontQueensPos[2] = i % QUEENS;
+		tempFrontQueensPos[2] = i  % QUEENS;
 		if ((tempFrontQueensPos[0] - 0) == (tempFrontQueensPos[1] - 1) || (tempFrontQueensPos[0] + 0) == (tempFrontQueensPos[1] + 1) || tempFrontQueensPos[0] == tempFrontQueensPos[1])
 				continue;
 		if ((tempFrontQueensPos[2] - 2) == (tempFrontQueensPos[1] - 1) || (tempFrontQueensPos[2] + 2) == (tempFrontQueensPos[1] + 1) || tempFrontQueensPos[2] == tempFrontQueensPos[1])
@@ -160,7 +159,7 @@ __host__ int NQueens(int seedLower, int seedUpper)
 	int numFQP = frontQueenPosV.size();
 	int* d_numFQP;
 
-	mid1 = clock();
+	mid0 = clock();
 
 	cudaMalloc((void**)&d_data, QUEENS*QUEENS*QUEENS*QUEENS * sizeof(int));
 	cudaMalloc((void**)&d_FQP, frontQueenPosV.size() * sizeof(int));
@@ -176,6 +175,8 @@ __host__ int NQueens(int seedLower, int seedUpper)
 			//cudaMemcpy(d_FQP, frontQueensPos, (QUEENS - 11) * sizeof(int), cudaMemcpyHostToDevice);
 				
 	countQueens <<< blocksPerGrid, threadsPerBlock >>> (d_FQP, d_data, d_numFQP);
+
+	cudaDeviceSynchronize();
 				
 	/*
 	cudaError_t error = cudaGetLastError();
@@ -185,7 +186,7 @@ __host__ int NQueens(int seedLower, int seedUpper)
 	}*/
 
 	cudaMemcpy(data, d_data, QUEENS*QUEENS*QUEENS*QUEENS * sizeof(int), cudaMemcpyDeviceToHost);
-	cudaDeviceSynchronize();
+
 
 	mid2 = clock();
 
@@ -197,7 +198,12 @@ __host__ int NQueens(int seedLower, int seedUpper)
 
 	end = clock();
 
-	printf("%d__%d, %d, %d\n", totalResult, mid1 - start, mid2 - mid1, end-mid2);
+	printf("%d__%d, %d, %d, %d, %d\n", totalResult, mid0 - start, mid1 - mid0, mid2 - mid1, end-mid2 , end - mid0);
 
 	return totalResult;	
+}
+
+int main() {
+	NQueens(0, QUEENS * QUEENS * QUEENS * QUEENS);
+	return 0;
 }
