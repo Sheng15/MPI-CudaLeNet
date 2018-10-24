@@ -142,7 +142,6 @@ int main(int argc, char  *argv[]){
     			printf("from slave %d ,num of solutions are %d\n",rank,slaveResult);
     		}
     	}
-    	printf("from slave %d ,num of solutions are %d\n",rank,solutionCount);
     }else{
     	MPI_Status slaveStatus;
     	bool done = false;
@@ -179,7 +178,7 @@ int main(int argc, char  *argv[]){
     }
 
     MPI_Finalize();
-    //printf("from slave %d ,num of solutions are %d\n",rank,solutions);
+    printf("from slave %d ,num of solutions are %d\n",rank,solutionCount);
     return 0;
 }
 
