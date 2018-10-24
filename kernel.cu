@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <time.h>
 #include <vector>
-#define QUEENS (16)
+#define QUEENS (14)
 
 __global__ void countQueens(int* frontQueensPos, int* data, int* numFQP)
 {
@@ -107,7 +107,7 @@ __host__ void initData(int* data) {
 		data[i] = 0;
 }
 
-int main(void)
+__host__ int NQueens(int seedLower, int seedUpper)
 {
 	clock_t start, mid1, mid2, end;
 
@@ -122,13 +122,18 @@ int main(void)
 
 	initData(data);
 
-	int seedFrom = 0;
-	int seedTo = QUEENS * QUEENS * QUEENS;
+	int seedFrom = seedLower;
+	int seedTo = seedUpper;
 
 	start = clock();
 
-	if (seedTo > QUEENS * QUEENS * QUEENS || seedFrom < 0)
+	if (seedTo < seedFrom)
 		return 0;
+	if (seedTo > QUEENS * QUEENS * QUEENS)
+		seedTo = QUEENS * QUEENS * QUEENS;
+	if (seedFrom < 0)
+		seedFrom = 0;
+
 	
 	for (int i = seedFrom; i < seedTo; i++) {
 		tempFrontQueensPos[0] = i / QUEENS / QUEENS;
@@ -178,9 +183,9 @@ int main(void)
 		printf(cudaGetErrorString(error));
 		exit(EXIT_FAILURE);
 	}*/
-	cudaThreadSynchronize();
 
 	cudaMemcpy(data, d_data, QUEENS*QUEENS*QUEENS*QUEENS * sizeof(int), cudaMemcpyDeviceToHost);
+	cudaDeviceSynchronize();
 
 	mid2 = clock();
 
@@ -193,6 +198,6 @@ int main(void)
 	end = clock();
 
 	printf("%d__%d, %d, %d\n", totalResult, mid1 - start, mid2 - mid1, end-mid2);
-	
-	
+
+	return totalResult;	
 }
