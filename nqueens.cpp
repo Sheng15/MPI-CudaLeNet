@@ -93,7 +93,7 @@ int main(int argc, char  *argv[]){
 	int size = 15;	        // init size of problem as 8
 	int reply;	
 	int slave;
-	int seeds = size * size * size -1;
+	int seeds = size * size  -1;
 	int solutionCount = 0;
 	int slaveResult = 0;
 
@@ -136,7 +136,7 @@ int main(int argc, char  *argv[]){
     		}else{
     			MPI_Recv(&slaveResult, 1, MPI_INT, slave, NUM_SOLUTIONS, MPI_COMM_WORLD, &masterStatus);
     			solutionCount +=slaveResult;
-    			printf("from slave %d ,we receive %d solutions!\n",slave,slaveResult);
+    			//printf("from slave %d ,we receive %d solutions!\n",slave,slaveResult);
     			resultCount++;
     		}
     	}
@@ -160,19 +160,24 @@ int main(int argc, char  *argv[]){
     			//printf("%d receive seed message\n", slave);
     			int queens[N];
 
-    			if(!collide(0,seed/(size*size),1,(seed/size)%size)&&!collide(0,seed/(size*size),2,seed%size)&&!collide(1,(seed/size)%size,2,seed%size)){
+    			if(!collide(0,seed/size,1,seed%size)){
+					queens[0] = seed/(size*size);
+					queens[1] = (seed/size)%size;
+					place(size,2,queens);
+				}
+    			/*if(!collide(0,seed/(size*size),1,(seed/size)%size)&&!collide(0,seed/(size*size),2,seed%size)&&!collide(1,(seed/size)%size,2,seed%size)){
 					queens[0] = seed/(size*size);
 					queens[1] = (seed/size)%size;
 					queens[2] = seed%size;
 					place(size,3,queens);
-		    	}
+		    	}*/
 
     			MPI_Send(&finished, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
 
 			}else{//receive terminate from master, stop then
 				MPI_Send(&result, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
 				MPI_Send(&solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
-				printf("from slave %d ,we send %d solutions to master! \n",rank,solutions);
+				//printf("from slave %d ,we send %d solutions to master! \n",rank,solutions);
 				done = true;
 			}
 
