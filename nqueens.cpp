@@ -4,7 +4,7 @@
 #include <omp.h>
 #include <math.h>
 #include <time.h>
-//#include "mpi.h"
+#include "mpi.h"
 
 const int N = 26;//max of size if 26
 //int queens[N]; // board of a game 
