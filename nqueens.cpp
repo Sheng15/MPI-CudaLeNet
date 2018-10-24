@@ -170,7 +170,7 @@ int main(int argc, char  *argv[]){
     }
 
     MPI_Finalize();
-    printf("num of solutions are %d\n",solutionCount);
+    printf("num of solutions are %d\n",solutions);
     return 0;
 }
 
