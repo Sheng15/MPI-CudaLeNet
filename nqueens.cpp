@@ -161,8 +161,8 @@ int main(int argc, char  *argv[]){
     			int queens[N];
 
     			if(!collide(0,seed/size,1,seed%size)){
-					queens[0] = seed/(size*size);
-					queens[1] = (seed/size)%size;
+					queens[0] = seed/size;
+					queens[1] = seed%size;
 					place(size,2,queens);
 				}
     			/*if(!collide(0,seed/(size*size),1,(seed/size)%size)&&!collide(0,seed/(size*size),2,seed%size)&&!collide(1,(seed/size)%size,2,seed%size)){
