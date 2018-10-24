@@ -16,7 +16,7 @@ enum messageType
 	FINISHED,
 	NEW_TASK,
 	TERMINATE,
-	RESULT,
+	RESULT
 };
 
 enum messageTage
@@ -119,7 +119,7 @@ int main(int argc, char  *argv[]){
     	while(slaves){
     		MPI_Recv(&reply, 1, MPI_INT, MPI_ANY_SOURCE, REPLY, MPI_COMM_WORLD, &masterStatus);
     		slave = masterStatus.MPI_SOURCE;
-    		//printf("receive notice from slave %d\n", slave );
+    		printf("receive %s notice from slave %d\n", replay,slave );
 
     		if(reply == FINISHED || reply == READY){
 	    		if (seeds){
