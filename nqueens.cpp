@@ -15,7 +15,8 @@ enum messageType
 	READY,
 	FINISHED,
 	NEW_TASK,
-	TERMINATE
+	TERMINATE,
+	RESULT,
 };
 
 enum messageTage
@@ -93,16 +94,15 @@ int main(int argc, char  *argv[]){
 	int reply;	
 	int slave;
 	int seeds = size * size * size -1;
+	int solutionCount = 0;
+	int slaveResult = 0;
 
 	//mpi message type
 	int ready = READY;
 	int finished = FINISHED;
 	int newTask = NEW_TASK;
 	int terminate = TERMINATE;
-
-	
-
-
+	int result = RESULT;
 
 	double startTime,endTime;
     startTime = MPI_Wtime();
@@ -115,8 +115,8 @@ int main(int argc, char  *argv[]){
 
     if(rank == 0) {
     	MPI_Status masterStatus;
-    	int salves = MPIsize -1;
-    	while(salves){
+    	int slaves = MPIsize -1;
+    	while(slaves){
     		MPI_Recv(&reply, 1, MPI_INT, MPI_ANY_SOURCE, REPLY, MPI_COMM_WORLD, &masterStatus);
     		slave = masterStatus.MPI_SOURCE;
     		//printf("receive notice from slave %d\n", slave );
@@ -131,8 +131,14 @@ int main(int argc, char  *argv[]){
 	    		}else{
 	    			MPI_Send(&terminate, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
 	    			//printf("message to terminate slave %d\n", slave );
-	    			salves --;
+	    			slaves --;
 	    		}			  		
+    		}
+
+    		if (reply == RESULT)
+    		{
+    			MPI_Recv(&slaveResult, 1, MPI_INT, slave, NUM_SOLUTIONS, MPI_COMM_WORLD, &masterStatus);
+    			solutionCount +=slaveResult;
     		}
     	}
 
@@ -162,6 +168,8 @@ int main(int argc, char  *argv[]){
     			MPI_Send(&finished, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
 
 			}else{//receive terminate from master, stop then
+				MPI_Send(&result, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
+				MPI_Send(&solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
 				done = true;
 			}
 
