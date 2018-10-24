@@ -116,29 +116,29 @@ int main(int argc, char  *argv[]){
     if(rank == 0) {
     	MPI_Status masterStatus;
     	int slaves = MPIsize -1;
-    	
-		MPI_Recv(&reply, 1, MPI_INT, MPI_ANY_SOURCE, REPLY, MPI_COMM_WORLD, &masterStatus);
-		slave = masterStatus.MPI_SOURCE;
-		printf("receive %d notice from slave %d\n", reply,slave );
+    	while(true){
+    		MPI_Recv(&reply, 1, MPI_INT, MPI_ANY_SOURCE, REPLY, MPI_COMM_WORLD, &masterStatus);
+    		slave = masterStatus.MPI_SOURCE;
+    		printf("receive %d notice from slave %d\n", reply,slave );
 
-		if(reply == FINISHED || reply == READY){
-    		if (seeds){
-    			MPI_Send(&newTask, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
+    		if(reply == FINISHED || reply == READY){
+	    		if (seeds){
+	    			MPI_Send(&newTask, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
 
-    			MPI_Send(&seeds, 1, MPI_INT, slave, SEED, MPI_COMM_WORLD);
-    			//printf("send seed to salve %d\n", slave );
-    			seeds --;
+	    			MPI_Send(&seeds, 1, MPI_INT, slave, SEED, MPI_COMM_WORLD);
+	    			//printf("send seed to salve %d\n", slave );
+	    			seeds --;
+	    		}else{
+	    			MPI_Send(&terminate, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
+	    			//printf("message to terminate slave %d\n", slave );
+	    			slaves --;
+	    		}			  		
     		}else{
-    			MPI_Send(&terminate, 1, MPI_INT, slave, REQUEST, MPI_COMM_WORLD);
-    			//printf("message to terminate slave %d\n", slave );
-    			slaves --;
-    		}			  		
-		}else{
-			MPI_Recv(&slaveResult, 1, MPI_INT, slave, NUM_SOLUTIONS, MPI_COMM_WORLD, &masterStatus);
-			solutionCount +=slaveResult;
-			printf("from slave %d ,we receive %d solutions!\n",slave,slaveResult);
-		}
-    	
+    			MPI_Recv(&slaveResult, 1, MPI_INT, slave, NUM_SOLUTIONS, MPI_COMM_WORLD, &masterStatus);
+    			solutionCount +=slaveResult;
+    			printf("from slave %d ,we receive %d solutions!\n",slave,slaveResult);
+    		}
+    	}
     }else{
     	MPI_Status slaveStatus;
     	bool done = false;
