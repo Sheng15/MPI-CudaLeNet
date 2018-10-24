@@ -170,6 +170,7 @@ int main(int argc, char  *argv[]){
 			}else{//receive terminate from master, stop then
 				MPI_Send(&result, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
 				MPI_Send(&solutions, 1, MPI_INT, 0, NUM_SOLUTIONS, MPI_COMM_WORLD);
+				printf("from slave %d ,we send %d solutions to master! \n",rank,solutions);
 				done = true;
 			}
 
