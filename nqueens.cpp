@@ -90,7 +90,7 @@ int generate(int size){
 
 int main(int argc, char  *argv[]){	
 	//int solutions = 0;	// number of solutions
-	int size;      
+	int size = argv[1];    
 	int reply;	
 	int slave;
 	int seeds = size * size  -1;
@@ -112,9 +112,6 @@ int main(int argc, char  *argv[]){
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &MPIsize);
-
-    printf("num of prob1em size: ",&size);
-	scanf("%d",&size);  
 
     if(rank == 0) {
     	MPI_Status masterStatus;
