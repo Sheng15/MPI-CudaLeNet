@@ -90,7 +90,8 @@ int generate(int size){
 
 int main(int argc, char  *argv[]){	
 	//int solutions = 0;	// number of solutions
-	int size = argv[1];    
+	int size;
+	sscanf(argv[1], "%d", &size);   
 	int reply;	
 	int slave;
 	int seeds = size * size  -1;
