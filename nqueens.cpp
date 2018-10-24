@@ -94,7 +94,7 @@ int main(int argc, char  *argv[]){
 	sscanf(argv[1], "%d", &size);   
 	int reply;	
 	int slave;
-	int seeds = size * size  -1;
+	int seeds = size * size * size -1;
 	int solutionCount = 0;
 	int slaveResult = 0;
 
@@ -160,18 +160,18 @@ int main(int argc, char  *argv[]){
     			MPI_Recv(&seed, 1, MPI_INT, 0, SEED, MPI_COMM_WORLD, &slaveStatus);
     			//printf("%d receive seed message\n", slave);
     			int queens[N];
-
+    			/*
     			if(!collide(0,seed/size,1,seed%size)){
 					queens[0] = seed/size;
 					queens[1] = seed%size;
-					place(size,2,queens);
-				}
-    			/*if(!collide(0,seed/(size*size),1,(seed/size)%size)&&!collide(0,seed/(size*size),2,seed%size)&&!collide(1,(seed/size)%size,2,seed%size)){
+					place(size,3,queens);
+				}*/
+    			if(!collide(0,seed/(size*size),1,(seed/size)%size)&&!collide(0,seed/(size*size),2,seed%size)&&!collide(1,(seed/size)%size,2,seed%size)){
 					queens[0] = seed/(size*size);
 					queens[1] = (seed/size)%size;
 					queens[2] = seed%size;
 					place(size,3,queens);
-		    	}*/
+		    	}
 
     			MPI_Send(&finished, 1, MPI_INT, 0, REPLY, MPI_COMM_WORLD);
 
