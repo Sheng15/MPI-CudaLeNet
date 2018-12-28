@@ -26,12 +26,12 @@ nq=32|1.683|1.775|1.854|1.784|1.943|2.668|7.920|46.28|328.84|
 
 ## Execution times for CUDA implementation
 In CUDA part, the time cost can separate into two parts. The time cost of malloc linear memories on the device. And the CUDA multi-thread processing part. we test it in a GeForce GTX 1070 Graphics card
-Size|12|13|14|15|16
+Size |12|13|14|15|16
 ---|---|---|---|---|---|
-malloc|0.216|0.418|0.424|0.426|0.47
-multithread|0.035|0.457|1.123|3.942|18.511
-reduction|0|0|0|0|0
-sum|0.251|0.875|1.547|4.368|18.981
+malloc|0.216|0.418|0.424|0.426|0.47|
+multithread|0.035|0.457|1.123|3.942|18.511|
+reduction|0|0|0|0|0|
+sum|0.251|0.875|1.547|4.368|18.981|
 
 
 ---
